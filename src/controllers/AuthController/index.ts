@@ -12,7 +12,7 @@ import { Request, Response } from "express";
 import { loginUserSchema } from "../../validatiors/AuthValidator/login";
 const jwtAccessKey: string = process.env.JWT_ACCESS_KEY || "";
 const jwtRefreshKey: string = process.env.JWT_REFRESH_KEY || "";
-const authController = {
+export const authController = {
   generateAccessToken: (user: IUser) => {
     return jwt.sign(
       {
