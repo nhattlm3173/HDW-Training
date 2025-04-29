@@ -2,6 +2,9 @@ import { IUser } from "../../interface/IUser";
 import { User } from "../../models/user";
 import bcrypt from "bcrypt";
 import { createUserSchema } from "../../validatiors/UserValidator";
+import dotenv from "dotenv";
+
+dotenv.config();
 import jwt, {
   Jwt,
   JwtPayload,
@@ -12,6 +15,7 @@ import { Request, Response } from "express";
 import { loginUserSchema } from "../../validatiors/AuthValidator/login";
 const jwtAccessKey: string = process.env.JWT_ACCESS_KEY || "";
 const jwtRefreshKey: string = process.env.JWT_REFRESH_KEY || "";
+
 export const authController = {
   generateAccessToken: (user: IUser) => {
     return jwt.sign(
@@ -19,7 +23,7 @@ export const authController = {
         id: user._id,
       },
       jwtAccessKey,
-      { expiresIn: "30s" }
+      { expiresIn: "300s" }
     );
   },
   generateRefreshToken: (user: IUser) => {
@@ -73,6 +77,7 @@ export const authController = {
   },
   loginUser: async (req: Request, res: Response): Promise<any> => {
     try {
+      console.log(jwtAccessKey, jwtRefreshKey);
       const { email, password } = req.body;
       const { error } = loginUserSchema.validate(req.body, {
         abortEarly: false,
@@ -118,6 +123,8 @@ export const authController = {
         return res.status(200).json({ userForToken });
       }
     } catch (err) {
+      // console.log(err);
+
       return res.status(500).json({ message: [err] });
     }
   },
