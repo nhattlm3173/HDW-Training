@@ -6,10 +6,14 @@ import jwt, {
   VerifyErrors,
 } from "jsonwebtoken";
 import { IUser } from "../../interface/IUser";
+import dotenv from "dotenv";
 
+dotenv.config();
 export const middlewareController = {
   verifyToken: (req: Request, res: Response, next: NextFunction): void => {
-    const token = req.headers.authentication;
+    const token = req.headers.authorization;
+    // console.log(req.headers);
+
     if (!token || typeof token !== "string") {
       res.status(403).json({ message: ["Token invalid"] });
       return;
