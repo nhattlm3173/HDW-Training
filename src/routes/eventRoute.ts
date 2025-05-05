@@ -3,7 +3,7 @@ import { eventController } from "../controllers/EventController";
 const router = Router();
 /**
  * @openapi
- * /events:
+ * /api/events:
  *   get:
  *     summary: Get all events
  *     tags:
@@ -23,7 +23,7 @@ const router = Router();
 router.get("/", eventController.getAllEvent);
 /**
  * @openapi
- * /events/{id}:
+ * /api/events/{id}:
  *   get:
  *     summary: Get a specific event by ID
  *     tags:
@@ -50,7 +50,34 @@ router.get("/", eventController.getAllEvent);
 router.get("/:id", eventController.getEventById);
 /**
  * @openapi
- * /events:
+ * /api/events/vouchers/{id}:
+ *   get:
+ *     summary: Get vouchers by eventID
+ *     tags:
+ *       - Events
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Event ID
+ *     responses:
+ *       200:
+ *         description: vouchers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/vouchers/:id", eventController.getAllVoucherOfEventByEventId);
+/**
+ * @openapi
+ * /api/events:
  *   post:
  *     summary: Create a new event
  *     tags:
@@ -72,7 +99,7 @@ router.get("/:id", eventController.getEventById);
 router.post("/", eventController.createEvent);
 /**
  * @openapi
- * /events/{id}:
+ * /api/events/{id}:
  *   put:
  *     summary: Update an existing event
  *     tags:
@@ -103,7 +130,7 @@ router.post("/", eventController.createEvent);
 router.put("/:id", eventController.updateEvent);
 /**
  * @openapi
- * /events/{id}:
+ * /api/events/{id}:
  *   delete:
  *     summary: Delete an event by ID
  *     tags:
@@ -126,7 +153,7 @@ router.put("/:id", eventController.updateEvent);
 router.delete("/:id", eventController.deleteEvent);
 /**
  * @openapi
- * /events/request-voucher:
+ * /api/events/request-voucher:
  *   post:
  *     summary: Request a voucher for an event
  *     tags:
@@ -156,7 +183,7 @@ router.delete("/:id", eventController.deleteEvent);
 router.post("/request-voucher", eventController.requestVoucher);
 /**
  * @openapi
- * /events/{eventId}/editable/me:
+ * /api/events/{eventId}/editable/me:
  *   post:
  *     summary: Request permission to edit event
  *     tags:
@@ -192,7 +219,7 @@ router.post("/request-voucher", eventController.requestVoucher);
 router.post("/:eventId/editable/me", eventController.requestEdit);
 /**
  * @openapi
- * /events/{eventId}/editable/release:
+ * /api/events/{eventId}/editable/release:
  *   post:
  *     summary: Release editing lock on event
  *     tags:
@@ -228,7 +255,7 @@ router.post("/:eventId/editable/me", eventController.requestEdit);
 router.post("/:eventId/editable/release", eventController.releaseEdit);
 /**
  * @openapi
- * /events/{eventId}/editable/maintain:
+ * /api/events/{eventId}/editable/maintain:
  *   post:
  *     summary: Maintain (extend) editing lock
  *     tags:

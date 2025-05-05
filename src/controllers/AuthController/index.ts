@@ -120,7 +120,7 @@ export const authController = {
         });
         // const { password, ...other } = user.toObject();
         userForToken.accessToken = accessToken;
-        return res.status(200).json({ userForToken });
+        return res.status(200).json(userForToken);
       }
     } catch (err) {
       // console.log(err);

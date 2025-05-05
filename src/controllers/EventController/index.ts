@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { Voucher } from "../../models/voucher";
 import { emailQueue } from "../../queue/emailQueue";
 import { User } from "../../models/user";
+import { populate } from "dotenv";
 const EDITABLE_TIMEOUT_MS = 5 * 60 * 1000;
 export const eventController = {
   getAllEvent: async (req: Request, res: Response): Promise<any> => {
@@ -23,6 +24,21 @@ export const eventController = {
         return res.status(404).json(`Event with id: ${id} not found`);
       }
       return res.status(200).json(event);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  },
+  getAllVoucherOfEventByEventId: async (
+    req: Request,
+    res: Response
+  ): Promise<any> => {
+    try {
+      const { id } = req.params;
+      const vouchers = await Voucher.find({ event_id: id });
+      if (!(vouchers.length > 0)) {
+        return res.status(404).json(`Vouchers with event_id: ${id} not found`);
+      }
+      return res.status(200).json(vouchers);
     } catch (error) {
       return res.status(500).json(error);
     }
