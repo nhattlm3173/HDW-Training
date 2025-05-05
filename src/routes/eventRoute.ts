@@ -3,6 +3,24 @@ import { eventController } from "../controllers/EventController";
 const router = Router();
 /**
  * @openapi
+ * components:
+ *   schemas:
+ *     Event:
+ *       type: object
+ *       required:
+ *         - event_name
+ *         - max_vouchers
+ *       properties:
+ *         event_name:
+ *           type: string
+ *           example: "Black Friday Event"
+ *         max_vouchers:
+ *           type: integer
+ *           example: 100
+ */
+
+/**
+ * @openapi
  * /api/events:
  *   get:
  *     summary: Get all events
