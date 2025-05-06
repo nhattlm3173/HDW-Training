@@ -20,7 +20,7 @@ export const eventController = {
 
       const filter = {
         isDelete: false,
-        ...(search && { name: { $regex: searchRegex } }),
+        ...(search && { event_name: { $regex: searchRegex } }),
       };
 
       // 🛠️ Tổng số lượng event thỏa mãn

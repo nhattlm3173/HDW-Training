@@ -1,6 +1,16 @@
 import { Router } from "express";
 import { eventController } from "../controllers/EventController";
+import { middlewareController } from "../controllers/MiddlewareController";
 const router = Router();
+/**
+ * @openapi
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
 /**
  * @openapi
  * components:
@@ -26,6 +36,8 @@ const router = Router();
  *     summary: Get all events
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of events
@@ -38,7 +50,7 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.get("/", eventController.getAllEvent);
+router.get("/", middlewareController.verifyToken, eventController.getAllEvent);
 /**
  * @openapi
  * /api/events/{id}:
@@ -46,6 +58,8 @@ router.get("/", eventController.getAllEvent);
  *     summary: Get a specific event by ID
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -65,7 +79,11 @@ router.get("/", eventController.getAllEvent);
  *       500:
  *         description: Internal server error
  */
-router.get("/:id", eventController.getEventById);
+router.get(
+  "/:id",
+  middlewareController.verifyToken,
+  eventController.getEventById
+);
 /**
  * @openapi
  * /api/events/vouchers/{id}:
@@ -73,6 +91,8 @@ router.get("/:id", eventController.getEventById);
  *     summary: Get vouchers by eventID
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -92,7 +112,11 @@ router.get("/:id", eventController.getEventById);
  *       500:
  *         description: Internal server error
  */
-router.get("/vouchers/:id", eventController.getAllVoucherOfEventByEventId);
+router.get(
+  "/vouchers/:id",
+  middlewareController.verifyToken,
+  eventController.getAllVoucherOfEventByEventId
+);
 /**
  * @openapi
  * /api/events:
@@ -100,6 +124,8 @@ router.get("/vouchers/:id", eventController.getAllVoucherOfEventByEventId);
  *     summary: Create a new event
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -114,7 +140,7 @@ router.get("/vouchers/:id", eventController.getAllVoucherOfEventByEventId);
  *       500:
  *         description: Internal server error
  */
-router.post("/", eventController.createEvent);
+router.post("/", middlewareController.verifyToken, eventController.createEvent);
 /**
  * @openapi
  * /api/events/{id}:
@@ -122,6 +148,8 @@ router.post("/", eventController.createEvent);
  *     summary: Update an existing event
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -145,7 +173,11 @@ router.post("/", eventController.createEvent);
  *       500:
  *         description: Internal server error
  */
-router.put("/:id", eventController.updateEvent);
+router.put(
+  "/:id",
+  middlewareController.verifyToken,
+  eventController.updateEvent
+);
 /**
  * @openapi
  * /api/events/{id}:
@@ -153,6 +185,8 @@ router.put("/:id", eventController.updateEvent);
  *     summary: Delete an event by ID
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -168,7 +202,11 @@ router.put("/:id", eventController.updateEvent);
  *       500:
  *         description: Internal server error
  */
-router.delete("/:id", eventController.deleteEvent);
+router.delete(
+  "/:id",
+  middlewareController.verifyToken,
+  eventController.deleteEvent
+);
 /**
  * @openapi
  * /api/events/request-voucher:
@@ -176,6 +214,8 @@ router.delete("/:id", eventController.deleteEvent);
  *     summary: Request a voucher for an event
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -198,7 +238,11 @@ router.delete("/:id", eventController.deleteEvent);
  *       500:
  *         description: Internal server error
  */
-router.post("/request-voucher", eventController.requestVoucher);
+router.post(
+  "/request-voucher",
+  middlewareController.verifyToken,
+  eventController.requestVoucher
+);
 /**
  * @openapi
  * /api/events/{eventId}/editable/me:
@@ -206,6 +250,8 @@ router.post("/request-voucher", eventController.requestVoucher);
  *     summary: Request permission to edit event
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: eventId
@@ -234,7 +280,11 @@ router.post("/request-voucher", eventController.requestVoucher);
  *         description: Event not found
  */
 
-router.post("/:eventId/editable/me", eventController.requestEdit);
+router.post(
+  "/:eventId/editable/me",
+  middlewareController.verifyToken,
+  eventController.requestEdit
+);
 /**
  * @openapi
  * /api/events/{eventId}/editable/release:
@@ -242,6 +292,8 @@ router.post("/:eventId/editable/me", eventController.requestEdit);
  *     summary: Release editing lock on event
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: eventId
@@ -270,7 +322,11 @@ router.post("/:eventId/editable/me", eventController.requestEdit);
  *         description: Event not found
  */
 
-router.post("/:eventId/editable/release", eventController.releaseEdit);
+router.post(
+  "/:eventId/editable/release",
+  middlewareController.verifyToken,
+  eventController.releaseEdit
+);
 /**
  * @openapi
  * /api/events/{eventId}/editable/maintain:
@@ -278,6 +334,8 @@ router.post("/:eventId/editable/release", eventController.releaseEdit);
  *     summary: Maintain (extend) editing lock
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: eventId
@@ -306,5 +364,9 @@ router.post("/:eventId/editable/release", eventController.releaseEdit);
  *         description: Event not found
  */
 
-router.post("/:eventId/editable/maintain", eventController.maintainEdit);
+router.post(
+  "/:eventId/editable/maintain",
+  middlewareController.verifyToken,
+  eventController.maintainEdit
+);
 export default router;
