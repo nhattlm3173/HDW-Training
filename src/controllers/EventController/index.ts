@@ -5,12 +5,43 @@ import mongoose from "mongoose";
 import { Voucher } from "../../models/voucher";
 import { emailQueue } from "../../queue/emailQueue";
 import { User } from "../../models/user";
+import { populate } from "dotenv";
 const EDITABLE_TIMEOUT_MS = 5 * 60 * 1000;
 export const eventController = {
   getAllEvent: async (req: Request, res: Response): Promise<any> => {
     try {
-      const event = await Event.find({ isDelete: false });
-      return res.status(200).json(event);
+      // 🛠️ Lấy query param page, limit
+      const page = parseInt(req.query.page as string) || 1; // default page = 1
+      const limit = parseInt(req.query.limit as string) || 10; // default limit = 10
+
+      // 🛠️ Optional: Tìm kiếm name
+      const search = (req.query.search as string) || "";
+      const searchRegex = new RegExp(search, "i"); // tìm kiếm không phân biệt hoa thường
+
+      const filter = {
+        isDelete: false,
+        ...(search && { event_name: { $regex: searchRegex } }),
+      };
+
+      // 🛠️ Tổng số lượng event thỏa mãn
+      const total = await Event.countDocuments(filter);
+
+      // 🛠️ Lấy data phân trang
+      const events = await Event.find(filter)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .sort({ createdAt: -1 }); // sắp xếp mới nhất trước
+      // console.log(events, page, limit, search, filter);
+
+      res.json({
+        data: events,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      });
     } catch (error) {
       return res.status(500).json(error);
     }
@@ -23,6 +54,21 @@ export const eventController = {
         return res.status(404).json(`Event with id: ${id} not found`);
       }
       return res.status(200).json(event);
+    } catch (error) {
+      return res.status(500).json(error);
+    }
+  },
+  getAllVoucherOfEventByEventId: async (
+    req: Request,
+    res: Response
+  ): Promise<any> => {
+    try {
+      const { id } = req.params;
+      const vouchers = await Voucher.find({ event_id: id });
+      if (!(vouchers.length > 0)) {
+        return res.status(404).json(`Vouchers with event_id: ${id} not found`);
+      }
+      return res.status(200).json(vouchers);
     } catch (error) {
       return res.status(500).json(error);
     }

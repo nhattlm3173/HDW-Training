@@ -8,7 +8,6 @@ export const createEventSchema = joi.object({
   }),
   max_vouchers: joi.number().required().messages({
     "any.required": "max_vouchers is required",
-    "string.empty": "max_vouchers cannot be empty",
-    "string.base": "max_vouchers must be a number",
+    "number.base": "max_vouchers must be a number",
   }),
 });

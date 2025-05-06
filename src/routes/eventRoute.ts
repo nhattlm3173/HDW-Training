@@ -1,13 +1,43 @@
 import { Router } from "express";
 import { eventController } from "../controllers/EventController";
+import { middlewareController } from "../controllers/MiddlewareController";
 const router = Router();
 /**
  * @openapi
- * /events:
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Event:
+ *       type: object
+ *       required:
+ *         - event_name
+ *         - max_vouchers
+ *       properties:
+ *         event_name:
+ *           type: string
+ *           example: "Black Friday Event"
+ *         max_vouchers:
+ *           type: integer
+ *           example: 100
+ */
+
+/**
+ * @openapi
+ * /api/events:
  *   get:
  *     summary: Get all events
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       200:
  *         description: A list of events
@@ -20,14 +50,16 @@ const router = Router();
  *       500:
  *         description: Internal server error
  */
-router.get("/", eventController.getAllEvent);
+router.get("/", middlewareController.verifyToken, eventController.getAllEvent);
 /**
  * @openapi
- * /events/{id}:
+ * /api/events/{id}:
  *   get:
  *     summary: Get a specific event by ID
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -47,14 +79,53 @@ router.get("/", eventController.getAllEvent);
  *       500:
  *         description: Internal server error
  */
-router.get("/:id", eventController.getEventById);
+router.get(
+  "/:id",
+  middlewareController.verifyToken,
+  eventController.getEventById
+);
 /**
  * @openapi
- * /events:
+ * /api/events/vouchers/{id}:
+ *   get:
+ *     summary: Get vouchers by eventID
+ *     tags:
+ *       - Events
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Event ID
+ *     responses:
+ *       200:
+ *         description: vouchers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Event'
+ *       404:
+ *         description: Event not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get(
+  "/vouchers/:id",
+  middlewareController.verifyToken,
+  eventController.getAllVoucherOfEventByEventId
+);
+/**
+ * @openapi
+ * /api/events:
  *   post:
  *     summary: Create a new event
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -69,14 +140,16 @@ router.get("/:id", eventController.getEventById);
  *       500:
  *         description: Internal server error
  */
-router.post("/", eventController.createEvent);
+router.post("/", middlewareController.verifyToken, eventController.createEvent);
 /**
  * @openapi
- * /events/{id}:
+ * /api/events/{id}:
  *   put:
  *     summary: Update an existing event
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -100,14 +173,20 @@ router.post("/", eventController.createEvent);
  *       500:
  *         description: Internal server error
  */
-router.put("/:id", eventController.updateEvent);
+router.put(
+  "/:id",
+  middlewareController.verifyToken,
+  eventController.updateEvent
+);
 /**
  * @openapi
- * /events/{id}:
+ * /api/events/{id}:
  *   delete:
  *     summary: Delete an event by ID
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -123,14 +202,20 @@ router.put("/:id", eventController.updateEvent);
  *       500:
  *         description: Internal server error
  */
-router.delete("/:id", eventController.deleteEvent);
+router.delete(
+  "/:id",
+  middlewareController.verifyToken,
+  eventController.deleteEvent
+);
 /**
  * @openapi
- * /events/request-voucher:
+ * /api/events/request-voucher:
  *   post:
  *     summary: Request a voucher for an event
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -153,14 +238,20 @@ router.delete("/:id", eventController.deleteEvent);
  *       500:
  *         description: Internal server error
  */
-router.post("/request-voucher", eventController.requestVoucher);
+router.post(
+  "/request-voucher",
+  middlewareController.verifyToken,
+  eventController.requestVoucher
+);
 /**
  * @openapi
- * /events/{eventId}/editable/me:
+ * /api/events/{eventId}/editable/me:
  *   post:
  *     summary: Request permission to edit event
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: eventId
@@ -189,14 +280,20 @@ router.post("/request-voucher", eventController.requestVoucher);
  *         description: Event not found
  */
 
-router.post("/:eventId/editable/me", eventController.requestEdit);
+router.post(
+  "/:eventId/editable/me",
+  middlewareController.verifyToken,
+  eventController.requestEdit
+);
 /**
  * @openapi
- * /events/{eventId}/editable/release:
+ * /api/events/{eventId}/editable/release:
  *   post:
  *     summary: Release editing lock on event
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: eventId
@@ -225,14 +322,20 @@ router.post("/:eventId/editable/me", eventController.requestEdit);
  *         description: Event not found
  */
 
-router.post("/:eventId/editable/release", eventController.releaseEdit);
+router.post(
+  "/:eventId/editable/release",
+  middlewareController.verifyToken,
+  eventController.releaseEdit
+);
 /**
  * @openapi
- * /events/{eventId}/editable/maintain:
+ * /api/events/{eventId}/editable/maintain:
  *   post:
  *     summary: Maintain (extend) editing lock
  *     tags:
  *       - Events
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: eventId
@@ -261,5 +364,9 @@ router.post("/:eventId/editable/release", eventController.releaseEdit);
  *         description: Event not found
  */
 
-router.post("/:eventId/editable/maintain", eventController.maintainEdit);
+router.post(
+  "/:eventId/editable/maintain",
+  middlewareController.verifyToken,
+  eventController.maintainEdit
+);
 export default router;
