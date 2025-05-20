@@ -108,8 +108,6 @@ router.post("/login", authController.loginUser);
  *   post:
  *     summary: Refresh access token
  *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
  *     parameters:
  *       - in: cookie
  *         name: refreshToken
@@ -121,9 +119,5 @@ router.post("/login", authController.loginUser);
  *       200:
  *         description: Token refreshed successfully
  */
-router.post(
-  "/refresh",
-  middlewareController.verifyToken,
-  authController.requestRefreshToken
-);
+router.post("/refresh", authController.requestRefreshToken);
 export default router;

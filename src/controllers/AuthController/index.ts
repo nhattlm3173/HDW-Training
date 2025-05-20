@@ -20,7 +20,7 @@ export const authController = {
   generateAccessToken: (user: IUser) => {
     return jwt.sign(
       {
-        id: user._id,
+        _id: user._id,
       },
       jwtAccessKey,
       { expiresIn: "300s" }
@@ -29,7 +29,7 @@ export const authController = {
   generateRefreshToken: (user: IUser) => {
     return jwt.sign(
       {
-        id: user._id,
+        _id: user._id,
       },
       jwtRefreshKey,
       { expiresIn: "365d" }
@@ -77,7 +77,7 @@ export const authController = {
   },
   loginUser: async (req: Request, res: Response): Promise<any> => {
     try {
-      console.log(jwtAccessKey, jwtRefreshKey);
+      // console.log(jwtAccessKey, jwtRefreshKey);
       const { email, password } = req.body;
       const { error } = loginUserSchema.validate(req.body, {
         abortEarly: false,
@@ -120,7 +120,7 @@ export const authController = {
         });
         // const { password, ...other } = user.toObject();
         userForToken.accessToken = accessToken;
-        return res.status(200).json({ userForToken });
+        return res.status(200).json(userForToken);
       }
     } catch (err) {
       // console.log(err);
@@ -136,16 +136,17 @@ export const authController = {
       error: VerifyErrors | null,
       decoded: string | Jwt | JwtPayload | undefined
     ): Promise<void> => {
-      const user = decoded as IUser;
-      const user1 = await User.findOne({ _id: user._id });
-      if (!user1) {
-        res.status(403).json({ message: ["You're not authenticated"] });
-        return;
-      }
       if (error) {
         res.status(401).json({ message: [error] });
         return;
       }
+      const user = decoded as IUser;
+      const user1 = await User.findOne({ _id: user._id });
+      if (!user1) {
+        res.status(403).json({ message: ["Your account has been deleted"] });
+        return;
+      }
+
       // refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
       const newAccessToken = authController.generateAccessToken(user);
       const newRefeshToken = authController.generateRefreshToken(user);
