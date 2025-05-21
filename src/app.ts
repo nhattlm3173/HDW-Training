@@ -3,6 +3,7 @@ import express, { Request, Response } from "express";
 import { errorHandler } from "./middlewares/errorHandler";
 import userRoutes from "./routes/userRoute";
 import eventRoutes from "./routes/eventRoute";
+import todoRoutes from "./routes/todoRoute";
 import authRoutes from "./routes/authRoute";
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
@@ -16,16 +17,13 @@ app.use(express.json());
 app.use(
   cors({
     origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
 );
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
-app.use("/api/users", userRoutes);
-
-app.use("/api/auth", authRoutes);
 const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
@@ -61,6 +59,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // app.use('/api/items', itemRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/todos", todoRoutes);
 
 app.use("/api/auth", authRoutes);
 // Global error handler (should be after routes)
