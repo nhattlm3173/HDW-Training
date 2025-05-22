@@ -20,18 +20,33 @@ export const todoController = {
 
       const total = await Todo.countDocuments(filter);
 
+      const isFinishTaskCount = await Todo.countDocuments({
+        isDelete: false,
+        isFinish: true,
+      });
+
       const todos = await Todo.find(filter)
         .skip((page - 1) * limit)
         .limit(limit)
         .sort({ createdAt: -1 });
       // console.log(Todos, page, limit, search, filter);
 
+      const filterTodos = todos.map((todo) => {
+        const { _id, ...rest } = todo.toObject();
+
+        return {
+          id: _id.toString?.() ?? _id,
+          ...rest,
+        };
+      });
+
       res.json({
-        data: todos,
+        data: filterTodos,
         pagination: {
           page,
           limit,
           total,
+          totalFinish: isFinishTaskCount,
           totalPages: Math.ceil(total / limit),
         },
       });
@@ -43,11 +58,18 @@ export const todoController = {
   getTodoById: async (req: Request, res: Response): Promise<any> => {
     try {
       const { id } = req.params;
+
       const todo = await Todo.findOne({ _id: id, isDelete: false });
+
       if (!todo) {
         return res.status(404).json(`Todo with id: ${id} not found`);
       }
-      return res.status(200).json(todo);
+
+      const { _id, ...rest } = todo.toObject();
+
+      const filterTodos = { id: _id, ...rest };
+
+      return res.status(200).json(filterTodos);
     } catch (error) {
       return res.status(500).json(error);
     }
@@ -67,13 +89,20 @@ export const todoController = {
           message: messages,
         });
       }
+
       const newTodo = new Todo({
         message,
       });
+
       const todo = await newTodo.save();
+
+      const { _id, ...rest } = todo.toObject();
+
+      const filterTodos = { id: _id, ...rest };
+
       return res
         .status(200)
-        .json({ data: todo, message: ["Todo created successfully"] });
+        .json({ data: filterTodos, message: ["Todo created successfully"] });
     } catch (error) {
       return res.status(500).json(error);
     }
@@ -99,9 +128,14 @@ export const todoController = {
         return res.status(404).json(`Todo with id: ${id} not found`);
       }
 
-      return res
-        .status(200)
-        .json({ updateTodo, message: ["Todo updated successfully"] });
+      const { _id, ...rest } = updateTodo.toObject();
+
+      const filterTodos = { id: _id, ...rest };
+
+      return res.status(200).json({
+        updateTodo: filterTodos,
+        message: ["Todo updated successfully"],
+      });
     } catch (error) {
       return res.status(500).json(error);
     }
@@ -134,9 +168,14 @@ export const todoController = {
         return res.status(404).json(`Todo with id: ${id} not found`);
       }
 
-      return res
-        .status(200)
-        .json({ updateTodo, message: ["Todo updated successfully"] });
+      const { _id, ...rest } = updateTodo.toObject();
+
+      const filterTodos = { id: _id, ...rest };
+
+      return res.status(200).json({
+        updateTodo: filterTodos,
+        message: ["Todo updated successfully"],
+      });
     } catch (error) {
       return res.status(500).json(error);
     }
@@ -156,9 +195,14 @@ export const todoController = {
         return res.status(404).json(`Todo with id: ${id} not found`);
       }
 
-      return res
-        .status(200)
-        .json({ updateTodo, message: ["Todo deleted successfully"] });
+      const { _id, ...rest } = updateTodo.toObject();
+
+      const filterTodos = { id: _id, ...rest };
+
+      return res.status(200).json({
+        updateTodo: filterTodos,
+        message: ["Todo deleted successfully"],
+      });
     } catch (error) {
       return res.status(500).json(error);
     }
