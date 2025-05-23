@@ -13,6 +13,11 @@ export const todoController = {
       const search = (req.query.search as string) || "";
       const searchRegex = new RegExp(search, "i");
 
+      const sortTypeRaw = ((req.query.sortType as string) || "").toLowerCase();
+      const sortType =
+        sortTypeRaw === "asc" ? 1 : sortTypeRaw === "desc" ? -1 : undefined;
+      const sortColumn = (req.query.sortColumn as string) || "";
+
       const filter = {
         isDelete: false,
         ...(search && { message: { $regex: searchRegex } }),
@@ -20,15 +25,21 @@ export const todoController = {
 
       const total = await Todo.countDocuments(filter);
 
+      let query = Todo.find(filter);
+
+      if (sortColumn && sortType) {
+        query = query.sort({ [sortColumn]: sortType });
+      }
+
       const isFinishTaskCount = await Todo.countDocuments({
         isDelete: false,
         isFinish: true,
       });
 
-      const todos = await Todo.find(filter)
-        .skip((page - 1) * limit)
-        .limit(limit)
-        .sort({ createdAt: -1 });
+      const todos = await query.skip((page - 1) * limit).limit(limit);
+
+      // console.log(sortType, sortColumn, todos);
+
       // console.log(Todos, page, limit, search, filter);
 
       const filterTodos = todos.map((todo) => {
