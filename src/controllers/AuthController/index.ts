@@ -23,7 +23,7 @@ export const authController = {
         _id: user._id,
       },
       jwtAccessKey,
-      { expiresIn: "300s" }
+      { expiresIn: "3600s" }
     );
   },
   generateRefreshToken: (user: IUser) => {

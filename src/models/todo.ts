@@ -1,22 +1,29 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
 export interface ITodo extends Document {
-  message: string;
-  isFinish: boolean;
+  title: string;
+  description: string;
+  dueDate: Date;
+  priority: "low" | "medium" | "high";
+  status: "todo" | "in-progress" | "done";
   isDelete: boolean;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
-const todoSchema = new mongoose.Schema(
-  {
-    message: { type: String, required: true },
-    isFinish: { type: Boolean, default: false },
-    isDelete: { type: Boolean, default: false },
+const todoSchema = new mongoose.Schema<ITodo>({
+  title: { type: String, required: true },
+  description: { type: String },
+  dueDate: { type: Date },
+  priority: {
+    type: String,
+    enum: ["low", "medium", "high"],
+    default: "medium",
   },
-  {
-    timestamps: true,
-  }
-);
+  status: {
+    type: String,
+    enum: ["todo", "in-progress", "done"],
+    default: "todo",
+  },
+  isDelete: { type: Boolean, default: false },
+});
 
 export const Todo = mongoose.model<ITodo>("Todo", todoSchema);

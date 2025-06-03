@@ -1,8 +1,13 @@
 import { Router } from "express";
 import { todoController } from "../controllers/TodoController";
+import multer from "multer";
+const upload = multer();
+
 const router = Router();
 
 router.get("/", todoController.getAllTodos);
+
+router.get("/total", todoController.getTotalAndTotalFinishTodos);
 
 router.get(
   "/:id",
@@ -10,11 +15,11 @@ router.get(
   todoController.getTodoById
 );
 
-router.post("/", todoController.createTodo);
+router.post("/", upload.none(), todoController.createTodo);
 
 router.patch("/:id/status", todoController.updateTodoStatus);
 
-router.patch(
+router.put(
   "/:id",
   //   middlewareController.verifyToken,
   todoController.updateTodo
